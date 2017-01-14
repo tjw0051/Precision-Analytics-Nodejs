@@ -30,18 +30,19 @@ An authentication file must be included in the root directory of the server. Thi
 mongo -u "USERNAME" -p "PASSWORD" -authenticationDatabase "admin"
 ```
 
-# Test POST LogEvent
+# Terminal Testing
+## Test POST LogEvent
 
 ```
 curl -i -X POST -H "Content-Type:application/json" http://localhost:8080/api/logevent -d '{"app":"test","type":"Search Error", "params": {"make":"mazda", "reg": "x868unw"}}'
 ```
 
-# Test GET all LogEvent
+## Test GET all LogEvent
 
 ```
 curl http://localhost:8080/api/logevent
 ```
 
-# Test POST clearlog
+## Test POST clearlog
 
 
