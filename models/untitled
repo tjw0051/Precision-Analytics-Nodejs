@@ -1,0 +1,10 @@
+// models/SearchError.js
+
+var mongoose     = require('mongoose');
+var Schema       = mongoose.Schema;
+
+var LogEvent = new Schema({
+    type: String,
+    params: {}
+});
+module.exports = mongoose.model('LogEvent', LogEventSchema);
