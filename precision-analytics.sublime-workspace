@@ -1,0 +1,501 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"enc",
+				"encryption"
+			],
+			[
+				"encr",
+				"encrypt"
+			],
+			[
+				"public",
+				"publicKey"
+			],
+			[
+				"SearchErr",
+				"SearchErrorSchema"
+			],
+			[
+				"reuq",
+				"require"
+			],
+			[
+				"get",
+				"getWeather"
+			],
+			[
+				"module",
+				"moduleName"
+			],
+			[
+				"modu",
+				"moduleName"
+			],
+			[
+				"inp",
+				"inputAdapter"
+			],
+			[
+				"proc",
+				"procAdapter"
+			],
+			[
+				"pro",
+				"procChannel"
+			],
+			[
+				"sub",
+				"subscribeInput"
+			],
+			[
+				"Quant",
+				"QuantumAdapter"
+			],
+			[
+				"Q",
+				"QuantumAdapter"
+			],
+			[
+				"send",
+				"sendType"
+			],
+			[
+				"rece",
+				"receiveType"
+			],
+			[
+				"in",
+				"incoming_channel"
+			],
+			[
+				"margin",
+				"margin"
+			],
+			[
+				"back",
+				"background-color"
+			],
+			[
+				"mar",
+				"margin"
+			],
+			[
+				"marg",
+				"margin-right"
+			],
+			[
+				"margi",
+				"margin-left"
+			],
+			[
+				"trans",
+				"translate3d"
+			],
+			[
+				"ali",
+				"text-align"
+			],
+			[
+				"ba",
+				"background-color"
+			],
+			[
+				"wid",
+				"width"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "/********************************************************************\n* FILE NAME: Server.js                                              *\n*                                                                   *\n* PURPOSE: Server                                                   *\n* FILE REFERENCES:                                                  *\n*                                                                   *\n* NOTES: Creates the node js server and handles requests.           *\n*                                                                   *\n* DEVELOPMENT HISTORY:                                              *\n*                                                                   *\n* Date          Author  Release Description Of Change               *\n* ----          ------  ------- ---------------------               *\n* 07/07/2016    Tom     0.0.1   File Created                        *\n********************************************************************/\n\n/**********************************\n    Load Modules\n**********************************/\nvar express = require('restify');\nvar bodyParser = require('body-parser');\nvar fs = require(\"fs\");\nvar mongoose = require('mongoose');\nvar auth = JSON.parse(fs.readFileSync(\"auth.json\"));\n\nvar options = {\n  user: auth.username,\n  pass: auth.password\n}\nmongoose.connect('mongodb://localhost/analytics', options);\n// Load Schema\nvar LogEvent = require('./models/LogEvent');\n\nvar port = 8080;\n\n// Set up Server \nvar server = restify.createServer();\nserver.use(restify.bodyParser());\n\n// Set up DB\nvar db = mongoose.connection;\ndb.on('error', console.error.bind(console, 'DB connection error:'));\ndb.once('open', function() {\n  // we're connected!\n});\n\n// Load encryption\nvar encryption = require('encryption');\nvar encryptor = new encryption();\nencryptor.setKeys('key.pub', 'key');\n\n\n/**********************************\n    Set up Routes\n**********************************/\n\nserver.get('/messages', getMessages);\nserver.post('/messages', postMessage);\n\n/**********************************\n    API Functions\n**********************************/\n\nfunction getEvents(req, res, next) {\n    LogEvent.find(function(err, logEvents) {\n            if (err)\n                res.send(err);\n            res.json(logEvents);\n        });\n}\n\nfunction postEvent(req, res, next) {\n    var decrypted = JSON.parse(encryptor.decrypt(req.body)); //TODO: test\n    var logEvent = new LogEvent();\n        logEvent.app = req.body.app;\n        logEvent.type = req.body.type;\n        logEvent.date = new Date();\n        logEvent.userId = req.body.userId;\n	logEvent.sessionId = req.body.sessionId;\n        logEvent.params = req.body.params;\n        logEvent.save(function(err) {\n            if (err)\n                res.send(err);\n\n            res.json({ message: 'Logged.' });\n            console.log(\"Logging: \" + logEvent);\n        });\n}\n\n\n/**********************************\n    Start Server\n**********************************/\nconsole.log('Connected on port ' + port);\n",
+			"file": "server.js",
+			"file_size": -1,
+			"file_write_time": -1,
+			"settings":
+			{
+				"buffer_size": 3012,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "// models/SearchError.js\n\nvar mongoose     = require('mongoose');\nvar Schema       = mongoose.Schema;\n\nvar LogEventSchema = new Schema({\n	app: String,\n    type: String,\n    date: Date,\n    userId: String,\n    params: {}\n});\nmodule.exports = mongoose.model('LogEvent', LogEventSchema);",
+			"file": "models/LogEvent.js",
+			"file_size": -1,
+			"file_write_time": -1,
+			"settings":
+			{
+				"buffer_size": 284,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/encryption.js",
+			"settings":
+			{
+				"buffer_size": 1539,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 267.0,
+		"selected_items":
+		[
+			[
+				"prett",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"pre",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"pretty",
+				"Pretty JSON: Validate"
+			],
+			[
+				"package control	",
+				"Package Control: Install Package"
+			],
+			[
+				"json",
+				"Set Syntax: JSON"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/Tom/Dev/Web/API/PrecisionAnalytics",
+		"/Users/Tom/Dev/Web/API/PrecisionAnalytics/src"
+	],
+	"file_history":
+	[
+		"/Users/Tom/Downloads/Makefile",
+		"/Users/Tom/Downloads/contiki-3.0/README-BUILDING.md",
+		"/Users/Tom/Desktop/contiki/examples/nano_usb_programmer/main.c",
+		"/Users/Tom/Dev/Web/API/PrecisionAnalytics/Tests/EncryptionTests.js",
+		"/Users/Tom/Desktop/contiki/examples/nano_usb_programmer_backup/main.c",
+		"/Volumes/Parallels Desktop 12.0.2 by Macbed.com/Tools/EFI Patch/SnowLeo.tool",
+		"/Users/Tom/Dev/AI/Quantum/src/QuantumAdapter.js",
+		"/Users/Tom/Dev/Web/API/PrecisionAnalytics/encryption.js",
+		"/Users/Tom/Dev/Web/API/PrecisionAnalytics/auth.json",
+		"/Users/Tom/Dev/Web/API/MobileAnalytics/auth.json",
+		"/Users/Tom/Dev/Web/API/MobileAnalytics/models/LogEvent.js",
+		"/Users/Tom/Dev/Web/API/MobileAnalytics/README.md",
+		"/Users/Tom/Dev/Web/API/MobileAnalytics/server.js",
+		"/Users/Tom/Dev/Web/API/MobileAnalytics/models/SearchError.js",
+		"/Users/Tom/Dev/Web/API/Mobile Analytics/models/SearchError.js",
+		"/Users/Tom/Dev/Web/API/Mobile Analytics/server.js",
+		"/Users/Tom/ClionProjects/opencv_test/CarDatabase-2/audi_a4/spec.json",
+		"/Users/Tom/Dev/Experiments/VehicleDatabase/makes.json",
+		"/Users/Tom/ClionProjects/opencv_test/cmake-build-debug/Training.vocab",
+		"/Users/Tom/ClionProjects/opencv_test/cmake-build-debug/A4.desc",
+		"/Users/Tom/ClionProjects/opencv_test/Image Sets/Phone/spec.json",
+		"/Users/Tom/Downloads/MOT History - Event Counts for Search - 2017-01-08.csv",
+		"/Users/Tom/Dev/AI/Quantum/modules/discordAdapter.js",
+		"/Users/Tom/Dev/AI/Quantum/modules/Debugger.js",
+		"/Users/Tom/Dev/AI/Quantum/consoleInput.js",
+		"/Users/Tom/Dev/Web/Blog/tjw0051.github.io/_posts/2017-01-08-Working-With-Classes-in-Javascript.markdown",
+		"/Users/Tom/Dev/Web/Blog/tjw0051.github.io/_posts/2016-01-08-Working-With-Classes-in-Javascript.markdown",
+		"/Users/Tom/Dev/AI/Quantum/src/quantum.js",
+		"/Users/Tom/Dev/AI/Discord/Ultrabot/bot.js",
+		"/Users/Tom/Dev/AI/Quantum/discordAdapter.js",
+		"/Users/Tom/Google Drive/University/Loughborough/Computer Vision/Raw Data",
+		"/Users/Tom/Dev/Experiments/VehicleDatabase/models2/440.json",
+		"/Users/Tom/Dev/Experiments/VehicleDatabase/models2/453.json",
+		"/Users/Tom/Dev/Experiments/VehicleDatabase/models2/447.json",
+		"/Users/Tom/Dev/Email Signature/Hypnos Studios Signature (final).html",
+		"/Users/Tom/Dev/HypnosStudios (Live)/public/views/index.html",
+		"/Users/Tom/Library/Mail/V3/MailData/Signatures/BFF57168-46CD-4B5A-8681-051EFBE44FE8.mailsignature",
+		"/Users/Tom/Dev/HypnosStudios (Refactored)/index.html",
+		"/Users/Tom/Desktop/bower.json",
+		"/Users/Tom/Dev/HypnosStudios (Refactored)/js/animation.js",
+		"/Users/Tom/Dev/HypnosStudios (Refactored)/css/landing-page.css",
+		"/Users/Tom/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/Tom/Dev/HypnosStudios (Refactored)/js/animation.css",
+		"/Users/Tom/Downloads/startbootstrap-grayscale-1.0.6/css/grayscale.css",
+		"/Users/Tom/Downloads/startbootstrap-grayscale-1.0.6/index.html",
+		"/Users/Tom/Downloads/startbootstrap-agency-1.0.6/css/agency.css",
+		"/Users/Tom/Downloads/startbootstrap-agency-1.0.6/index.html",
+		"/Users/Tom/Downloads/startbootstrap-landing-page-1.0.5/css/bootstrap.css",
+		"/Users/Tom/AndroidStudioProjects/MotHistory3/app/src/main/res/layout/fragment_search.xml",
+		"/Users/Tom/Downloads/MGSE_Project-2/NodejsServer/server.js",
+		"/Users/Tom/Dev/Experiments/HttpParseTests/Main.java"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"Voca",
+			"^Pred.*",
+			"Matches: .*",
+			"Matches: *",
+			"Make_ID",
+			"/",
+			"contact",
+			"feature-it",
+			"nav",
+			"section-c-left",
+			"feature-item",
+			"list",
+			"banner",
+			"background",
+			"feature-icons",
+			"feature-icon",
+			"feature",
+			"section-heading",
+			"row-section",
+			"nav",
+			"navbar",
+			"invis",
+			"fade",
+			"clearf",
+			"section-a-head",
+			"detailed-feature",
+			"right-ali",
+			"detailed-features",
+			"detailed-featur",
+			"feature-hea",
+			"feature-desc",
+			"feature-tex",
+			"color",
+			"detailed-feature",
+			"feature",
+			"detailed",
+			"detailed-fea",
+			"banner",
+			"network-na",
+			"lead",
+			".lead",
+			"topnav"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			""
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "server.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3012,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "models/LogEvent.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 284,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								204,
+								204
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/encryption.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1539,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1011,
+								1011
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "precision-analytics.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"",
+				"~/Dev/Experiments/VehicleDatabase/makes.json"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
